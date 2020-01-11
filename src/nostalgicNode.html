@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nostalgic',{
+        category: 'function',
+        color: '#FFCC66',
+        defaults: {
+            name: {value: ''},
+			interval: {value: 1, validate: RED.validators.number()},
+			resend: {value: false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: 'font-awesome/fa-clock-o',
+        label: function() {
+            return this.name || 'nostalgic';
+        },
+		labelStyle: function() {
+    		return this.name?"node_label_italic":"";
+		},
+		outputLabel: function() {
+			return `${this.resend?'Resending msg every':'Sending only nostalgia every'} ${this.interval} seconds`;
+		}
+    });
+</script>
+
+<script type="text/html" data-template-name="nostalgic">
+	<div class="form-row">
+		<label for="node-input-interval"><i class="fa fa-clock-o"></i> Interval</label>
+		<input type="text" id="node-input-interval" placeholder="1" style="width:45px; height:28px;"> seconds
+	</div>
+	<div class="form-row">
+        <label for="node-input-resend" style="width: 250px"><i class="fa fa-refresh"></i> Resend last message every interval: </label>
+        <input type="checkbox" id="node-input-resend" style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
+	<div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="nostalgic">
+	<h1>Nostalgic</h1>
+    <p>A node that remembers how long ago a message was received, and can remind you at a set interval.</p>
+</script>
