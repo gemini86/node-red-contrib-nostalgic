@@ -4,16 +4,23 @@ module.exports = function(RED) {
 	function NostalgicNode(config) {
 		RED.nodes.createNode(this,config);
 		var node = this;
-		node.interval = config.interval * 1000;
-		node.resend = config.resend;
-		var msgStore = {};
-		msgStore.resend = node.resend;
-		node.intervalFunction = function () {
-			node.setInterval = setInterval(() => {
-				resendFunction(msgStore);
-			}, node.interval);
+		node.lastMsg = {
+			interval: config.interval * 1000,
+			resend: config.resend,
+
 		};
-		function resendFunction (m) {
+		var interval;
+		var intervalHandler = {
+			set: function (msg) {
+				interval = setInterval(() => {
+					resendFunction(msg);
+				}, node.lastMsg.interval);
+			},
+			clear: function (interval) {
+				clearInterval(interval);
+			}
+		};
+		var resendFunction = (m) => {
 			let duration = m.timestamp - Date.now();
 			let n = moment.duration(duration).humanize(true);
 			if (m.resend) {
@@ -23,19 +30,20 @@ module.exports = function(RED) {
 				let id = RED.util.generateId();
 				node.send({ _msgId: id, nostalgic: n });
 			}
-		}
+		};
 		node.on('input', function(msg, send, done) {
 			send = send || function() { node.send.apply(node,arguments); };
-			msgStore.msg = RED.util.cloneMessage(msg);
-			msgStore.timestamp = Date.now();
+			node.lastMsg.msg = RED.util.cloneMessage(msg);
+			node.lastMsg.timestamp = Date.now();
 			node.send(msg);
-			node.intervalFunction();
+			intervalHandler.set(node.lastMsg);
 			if (done) {
 				done();
 			}
 		});
-		node.on('close', function() {
-			clearInterval(node.setInterval);
+		node.on('close', function(done) {
+			intervalHandler.clear(interval);
+			done();
 		});
 	}
 	RED.nodes.registerType('nostalgic', NostalgicNode);

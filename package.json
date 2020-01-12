@@ -6,11 +6,11 @@
   "scripts": {
     "test": "mocha \"test/*_spec.js\""
   },
-  "node-red" : {
-        "nodes": {
-            "nostalgic": "src/nostalgicNode.js"
-        }
-    },
+  "node-red": {
+    "nodes": {
+      "nostalgic": "src/nostalgicNode.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gemini86/node-red-contrib-nostalgic.git"
