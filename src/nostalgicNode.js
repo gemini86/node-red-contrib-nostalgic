@@ -28,7 +28,6 @@ module.exports = function(RED) {
 				node.send({ _msgid: id, nostalgic: n });
 			}
 		};
-
 		node.interval = config.interval * 1000;
 		node.lastMsg = {
 			resend: config.resend
@@ -38,6 +37,20 @@ module.exports = function(RED) {
 			send = send || function() { node.send.apply(node,arguments); };
 			node.lastMsg.msg = RED.util.cloneMessage(msg);
 			node.lastMsg.timestamp = Date.now();
+			
+			function errorHandler (err, msg) {
+				if (done) {
+					done(err);
+				} else {
+					node.error(err, msg);
+				}
+			}
+
+			if (msg.timestamp != undefined) {
+				if (isNaN(msg.timestamp)) {
+					errorHandler('msg.timestamp is not a number.', msg);
+				}
+			}
 			msg.nostalgic = msg.timestamp?(moment.duration(msg.timestamp - Date.now()).humanize(true)):'just now';
 			node.send(msg);
 			if (interval != undefined) {

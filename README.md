@@ -9,5 +9,7 @@ Any message on input will be passed though to the output with a `nostalgic` prop
 
 If the message has property `timestamp` set to a unix timestamp (milliseconds since epoch), it will be used to calculate how long ago a message was received. This is useful if you want the node to output the last message received before a flow restart, using a context variable or persistent context variable. See example flow in the examples folder.
 
+[![alt text](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png "Buy me a coffee!")](https://www.buymeacoffee.com/NxcwUpD)
+
 ## Bug reports
 [Please report issues!](http://github.com/gemini86/node-red-contrib-nostalgic/issues)
