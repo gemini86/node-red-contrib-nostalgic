@@ -108,9 +108,27 @@ describe('Nostalgic Node', function () {
 			});
 			n1.receive({ payload: 'test 4' });
 			setTimeout(() => {
-				msgCounter.should.be.aboveOrEqual(99);
+				msgCounter.should.be.aboveOrEqual(90);
 				done();
 			}, 1040);
+		});
+	});
+
+	it('should error when msg.timestamp is NaN', function (done) {
+		let flow = [
+			{ id: 'n1', type: 'nostalgic', name: '', interval: 10, resend: false  }
+		];
+		helper.load(nostalgicNode, flow, function () {
+			var n1 = helper.getNode('n1');
+			n1.receive({ payload: 'test 3', timestamp: 'cock' });
+			setImmediate(() => {
+				helper.log().should.be.called;
+				var logEvents = helper.log().args.filter(evt => {
+					return evt[0].type == 'nostalgic';
+				});
+				logEvents[0][0].should.have.property('msg', 'msg.timestamp is not a number.');
+				done();
+			});
 		});
 	});
 });

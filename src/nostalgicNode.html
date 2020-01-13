@@ -39,5 +39,13 @@
 
 <script type="text/html" data-help-name="nostalgic">
 	<h1>Nostalgic</h1>
-    <p>A node that remembers how long ago a message was received, and can remind you at a set interval.</p>
+    <p>A node to tell you how long ago it received a message. Useful for determining when your data may be stale!</p>
+
+	<h3>Details</h3>
+	<p>Any message on input will be passed though to the output with a <code>nostalgic</code> property, which is a string representing the humanized amount of time the last message was received. A message, which can be either a message with just a <code>nostalgic</code> property (default) or a full clone of the original message, is sent every configured interval until the node configuration is modified or the flow is stopped/restarted. The node will then wait for a new input before again sending messages at regular intervals.</p>
+
+	<p>If the message has property <code>timestamp</code> set to a unix timestamp (milliseconds since epoch), it will be used to calculate how long ago a message was received. This is useful if you want the node to output the last message received before a flow restart, using a context variable or persistent context variable. See example flow in the examples folder.</p>
+
+	<h3>Bug reports</h3>
+	<a href="http://github.com/gemini86/node-red-contrib-nostalgic/issues">Please report issues!</a>
 </script>
