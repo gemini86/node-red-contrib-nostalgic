@@ -17,14 +17,15 @@ module.exports = function(RED) {
 		var node = this;
 		var interval;
 		var resendFunction = (m) => {
-			let duration = m.timestamp - Date.now();
+			let timestamp = m.msg.timestamp || m.timestamp;
+			let duration = timestamp - Date.now();
 			let n = moment.duration(duration).humanize(true);
 			if (m.resend) {
 				m.msg.nostalgic = n;
 				node.send(m.msg);
 			} else {
 				let id = RED.util.generateId();
-				node.send({ _msgId: id, nostalgic: n });
+				node.send({ _msgid: id, nostalgic: n });
 			}
 		};
 
@@ -37,7 +38,11 @@ module.exports = function(RED) {
 			send = send || function() { node.send.apply(node,arguments); };
 			node.lastMsg.msg = RED.util.cloneMessage(msg);
 			node.lastMsg.timestamp = Date.now();
+			msg.nostalgic = msg.timestamp?(moment.duration(msg.timestamp - Date.now()).humanize(true)):'just now';
 			node.send(msg);
+			if (interval != undefined) {
+				interval.clear();
+			}
 			interval = new IntervalTimer(function() {resendFunction(node.lastMsg);}, node.interval);
 
 			if (done) {

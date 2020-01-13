@@ -1,4 +1,5 @@
 var nostalgicNode = require('../src/nostalgicNode.js');
+//eslint-disable-next-line no-unused-vars
 var should = require('should');
 var helper = require('node-red-node-test-helper');
 
