@@ -16,6 +16,7 @@
     "url": "git+https://github.com/gemini86/node-red-contrib-nostalgic.git"
   },
   "keywords": [
+	"node-red",
     "moment",
     "time",
     "track",
