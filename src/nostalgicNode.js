@@ -59,7 +59,6 @@ module.exports = function(RED) {
 			}
 
 			if (node.attach == true) {
-				node.warn('attach = true');
 				if (msg.timestamp) {
 					msg[node.outputProp] = moment.duration(msg.timestamp - Date.now()).humanize(true);
 				} else {
