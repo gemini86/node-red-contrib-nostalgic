@@ -1,38 +1,66 @@
 <script type="text/javascript">
-    RED.nodes.registerType('nostalgic',{
-        category: 'function',
-        color: '#FFCC66',
-        defaults: {
-            name: {value: ''},
-			interval: {value: 1, validate: RED.validators.number()},
-			resend: {value: false}
-        },
-        inputs:1,
-        outputs:1,
-        icon: 'font-awesome/fa-clock-o',
-        label: function() {
-            return this.name || 'nostalgic';
-        },
-		labelStyle: function() {
-    		return this.name?"node_label_italic":"";
-		},
-		outputLabel: function() {
-			return `${this.resend?'Resending msg every':'Sending only nostalgia every'} ${this.interval} seconds`;
+RED.nodes.registerType('nostalgic',{
+    category: 'function',
+    color: '#FFCC66',
+	defaults: {
+        name: {value: ''},
+		outputProp: {value: 'nostalgic', required: true},
+		interval: {value: 1, validate: RED.validators.number()},
+		resend: {value: false},
+		attach: {value: true}
+    },
+    inputs:1,
+    outputs:1,
+    icon: 'font-awesome/fa-history',
+    label: function() {
+        return this.name || 'nostalgic';
+    },
+	labelStyle: function() {
+		return this.name?"node_label_italic":"";
+	},
+	outputLabels: function() {
+		let label;
+		if (this.resend) {
+			label = `Resending last msg every ${this.interval} seconds`;
+		} else {
+			label = `Sending only nostalgia every ${this.interval} seconds`
 		}
-    });
+		return label;
+	},
+	oneditprepare: function() {
+		$("#node-input-outputProp").typedInput({default:'msg',types:['msg']});
+	},
+	oneditsave: function() {
+		if (this.outputProp === undefined) {
+            $("#node-input-outputProp").val("nostalgic");
+        }
+
+		if (this.attach == undefined) {
+			$("#node-input-attach").val(true);
+		}
+    }
+});
 </script>
 
 <script type="text/html" data-template-name="nostalgic">
 	<div class="form-row">
-		<label for="node-input-interval"><i class="fa fa-clock-o"></i> Interval</label>
-		<input type="text" id="node-input-interval" placeholder="1" style="width:45px; height:28px;"> seconds
-	</div>
-	<div class="form-row">
-        <label for="node-input-resend" style="width: 250px"><i class="fa fa-refresh"></i> Resend last message every interval: </label>
-        <input type="checkbox" id="node-input-resend" style="display:inline-block; width:15px; vertical-align:baseline;">
+        <label for="node-input-outputProp" style="width:150px;"><i class="fa fa-ellipsis-h"></i> Output to property </label>
+        <input type="text" id="node-input-outputProp" value="nostalgic">
     </div>
 	<div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<label for="node-input-interval" style="width:150px;"><i class="fa fa-history"></i> Interval </label>
+		<input type="text" id="node-input-interval" placeholder="1" style="width:45px;"> seconds
+	</div>
+	<div class="form-row" style="white-space:nowrap">
+        <input type="checkbox" id="node-input-resend" style="display:inline-block; width:45px; vertical-align:baseline;">
+		<label for="node-input-resend"> Resend last message every interval? </label>
+    </div>
+	<div class="form-row" style="white-space:nowrap">
+		<input type="checkbox" id="node-input-attach" style="display:inline-block; width:45px; vertical-align:baseline;" checked>
+		<label for="node-input-attach"> Attach nostalgic property to new messages received? </label>
+    </div>
+	<div class="form-row">
+        <label for="node-input-name" style="width:150px;"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -42,9 +70,13 @@
     <p>A node to tell you how long ago it received a message. Useful for determining when your data may be stale!</p>
 
 	<h3>Details</h3>
-	<p>Any message on input will be passed though to the output with a <code>nostalgic</code> property, which is a string representing the humanized amount of time the last message was received. A message, which can be either a message with just a <code>nostalgic</code> property (default) or a full clone of the original message, is sent every configured interval until the node configuration is modified or the flow is stopped/restarted. The node will then wait for a new input before again sending messages at regular intervals.</p>
+	<p>Any message on input will be passed though to the output. If 'Attach nostalgic property to new messages received' is checked, every new message the node receives will have an added property, which is configured in the 'Output to property' field, attached to it.</p>
 
-	<p>If the message has property <code>timestamp</code> set to a unix timestamp (milliseconds since epoch), it will be used to calculate how long ago a message was received. This is useful if you want the node to output the last message received before a flow restart, using a context variable or persistent context variable. See example flow in the examples folder.</p>
+	<p>Eg. <code>msg: {payload: "hello", nostalgic: "just now"}</code></p>
+
+	<p>The new message property is a string representing the humanized amount of time the last message was received. On the configured interval, a message is sent which can be either a message with just the configured output property (default) or a full clone of the original message with the added output property. If the node configuration is modified or the flow is stopped/restarted, interval output messages will stop until a new message arrives on input.</p>
+
+	<p>If the incoming message has property <code>timestamp</code> set to a unix timestamp (milliseconds since epoch), it will be used to calculate how long ago a message was received. This is useful if you want the node to continue outputting messages on interval after a flow restart, using a context variable or persistent context variable. See example flow in the examples folder.</p>
 
 	<h3>Bug reports</h3>
 	<a href="http://github.com/gemini86/node-red-contrib-nostalgic/issues">Please report issues!</a>
