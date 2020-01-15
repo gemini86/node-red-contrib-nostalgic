@@ -4,35 +4,63 @@
         color: '#FFCC66',
         defaults: {
             name: {value: ''},
+			outputProp: {value: 'nostalgic', required: true},
 			interval: {value: 1, validate: RED.validators.number()},
-			resend: {value: false}
+			resend: {value: false},
+			attach: {value: true}
         },
         inputs:1,
         outputs:1,
-        icon: 'font-awesome/fa-clock-o',
+        icon: 'font-awesome/fa-history',
         label: function() {
             return this.name || 'nostalgic';
         },
 		labelStyle: function() {
     		return this.name?"node_label_italic":"";
 		},
-		outputLabel: function() {
-			return `${this.resend?'Resending msg every':'Sending only nostalgia every'} ${this.interval} seconds`;
-		}
+		outputLabels: function() {
+			let label;
+			if (this.resend) {
+				label = `Resending last msg every ${this.interval} seconds`;
+			} else {
+				label = `Sending only nostalgia every ${this.interval} seconds`
+			}
+			return label;
+		},
+        oneditprepare: function() {
+            $("#node-input-outputProp").typedInput({default:'msg',types:['msg']});
+        },
+        oneditsave: function() {
+            if (this.outputProp === undefined) {
+                $("#node-input-outputProp").val("nostalgic");
+            }
+
+			if (this.attach == undefined) {
+				$("#node-input-attach").val(true);
+			}
+        }
     });
 </script>
 
 <script type="text/html" data-template-name="nostalgic">
 	<div class="form-row">
-		<label for="node-input-interval"><i class="fa fa-clock-o"></i> Interval</label>
-		<input type="text" id="node-input-interval" placeholder="1" style="width:45px; height:28px;"> seconds
-	</div>
-	<div class="form-row">
-        <label for="node-input-resend" style="width: 250px"><i class="fa fa-refresh"></i> Resend last message every interval: </label>
-        <input type="checkbox" id="node-input-resend" style="display:inline-block; width:15px; vertical-align:baseline;">
+        <label for="node-input-outputProp" style="width:150px;"><i class="fa fa-ellipsis-h"></i> Output to property </label>
+        <input type="text" id="node-input-outputProp" value="nostalgic">
     </div>
 	<div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<label for="node-input-interval" style="width:150px;"><i class="fa fa-history"></i> Interval </label>
+		<input type="text" id="node-input-interval" placeholder="1" style="width:45px;"> seconds
+	</div>
+	<div class="form-row" style="white-space:nowrap">
+        <input type="checkbox" id="node-input-resend" style="display:inline-block; width:45px; vertical-align:baseline;">
+		<label for="node-input-resend"> Resend last message every interval? </label>
+    </div>
+	<div class="form-row" style="white-space:nowrap">
+		<input type="checkbox" id="node-input-attach" style="display:inline-block; width:45px; vertical-align:baseline;" checked>
+		<label for="node-input-attach"> Attach nostalgic property to new messages received? </label>
+    </div>
+	<div class="form-row">
+        <label for="node-input-name" style="width:150px;"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
