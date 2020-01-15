@@ -33,7 +33,7 @@
         ],
 		"complexity": [
 			"warn",
-			6
+			8
 		],
 		"no-console": [
 			"warn"
